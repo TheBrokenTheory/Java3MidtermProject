@@ -41,8 +41,14 @@ public class MidTermProject extends Application {
     //Returns the top menubar and all the controls
     private MenuBar getMenuBar()
     {
-        MenuBar topMenu = new MenuBar();
-        
+        MenuBar topMenu = new MenuBar();        
+        topMenu.getMenus().addAll(getFileMenu(), getOrderMenu(), getCustomerMenu(), getEmployeeMenu());
+        return topMenu;
+    }
+    
+    //Returns file menu
+    private Menu getFileMenu()
+    {
         //Create file menu and populate with Exit button
         Menu menuFile = new Menu("File");
         MenuItem exit = new MenuItem("Exit");
@@ -55,11 +61,67 @@ public class MidTermProject extends Application {
         
         menuFile.getItems().addAll(exit);
         
+        return menuFile;
+    }
+    
+    //Returns menu for all order queries
+    private Menu getOrderMenu()
+    {
+       Menu menuQuery = new Menu("Order");
+        MenuItem orderTotal = new MenuItem("Order Total");
+        orderTotal.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+               
+            }
+        }); 
         
+        MenuItem orderDetail = new MenuItem("Order Details");
+        orderDetail.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+               
+            }
+        }); 
         
+        menuQuery.getItems().addAll(orderTotal, orderDetail);
         
-        topMenu.getMenus().addAll(menuFile);
-        return topMenu;
+        return menuQuery;
+    }
+    
+    //Returns menu for all customer queries
+    private Menu getCustomerMenu()
+    {
+        Menu menuCustomer = new Menu("Customer");
+        MenuItem customerDetails = new MenuItem("Customer Details");
+        customerDetails.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+               
+            }
+        });
+        
+        menuCustomer.getItems().addAll(customerDetails);
+        
+        return menuCustomer;
+    }
+    
+    //Returns menu for all employee queries
+    private Menu getEmployeeMenu()
+    {
+        Menu menuEmployee = new Menu("Employee");
+        
+        MenuItem employeeBirthdays = new MenuItem("Employee Birthdays");
+        employeeBirthdays.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t)
+            {
+               
+            }
+        }); 
+        
+        menuEmployee.getItems().addAll(employeeBirthdays);
+        
+        return menuEmployee;
     }
     
     //Connect to the database

@@ -7,6 +7,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,11 +21,14 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 
 /**
@@ -32,13 +37,13 @@ import javafx.stage.Stage;
  */
 public class MidTermProject extends Application {
     
-    private ObservableList<ObservableList> data;
+  
     
     private BorderPane main = new BorderPane();
     private Statement queryStatement;
     
     @Override
-    public void start(Stage primaryStage)
+    public void start(Stage primaryStage) throws SQLException
     {
         main.setTop(getMenuBar());
         Scene scene = new Scene(main, 675, 550);
@@ -202,11 +207,11 @@ public class MidTermProject extends Application {
         return EmployeeDetailBox;
     }
     
-    private void displayResults()
+    private void displayResults() throws SQLException
     {
         TableView resultsTable = new TableView();
-        data = FXCollections.observableArrayList();
-        
+        ObservableList<ObservableList> data = FXCollections.observableArrayList();
+
         try
         {
             String queryString = "select * from Employees";
@@ -214,25 +219,42 @@ public class MidTermProject extends Application {
             ResultSet resultSet = queryStatement.executeQuery(queryString);
             ResultSetMetaData rsMetaData = resultSet.getMetaData();
             
-            for (int i = 1; i <= rsMetaData.getColumnCount(); i++)
+            for (int i = 0; i < resultSet.getMetaData().getColumnCount(); i++)
             {
-                TableColumn test = new TableColumn(rsMetaData.getColumnName(i));
-                System.out.println(rsMetaData.getColumnName(i) + "    ");
-                test.setResizable(true);
-                resultsTable.getColumns().addAll(test);
-            }
-            // Iterate through the result and print the student names
-            while (resultSet.next()) 
-            {
+               //We are using non property style for making dynamic table
+               final int j = i;
+               TableColumn col = new TableColumn(resultSet.getMetaData().getColumnName(i + 1));
+               col.setCellValueFactory(
+                   // implement Callback interface
+                   new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() 
+                   {
+                       @Override
+                       public ObservableValue<String> call(CellDataFeatures<ObservableList, String> param) 
+                       {
+                           if (param == null || param.getValue() == null || param.getValue().get(j) == null) 
+                           {
+                               return null;
+                           }
+                           return new SimpleStringProperty(param.getValue().get(j).toString());
+                       }
+                   }
+               );
+
+               resultsTable.getColumns().addAll(col);
+           }
+            
+            while (resultSet.next()) {
+                //Iterate Row
                 ObservableList<String> row = FXCollections.observableArrayList();
-                for (int i = 1; i <= rsMetaData.getColumnCount(); i++)
-                {
+                for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                    //Iterate Column
                     row.add(resultSet.getString(i));
                 }
                 data.add(row);
             }
-            
-            resultsTable.setItems(data);
+
+             resultsTable.setItems(data);
+             
         }
         catch(SQLException ex)
         {

@@ -153,10 +153,11 @@ public class MidTermProject extends Application {
                 if(validateOrderNumber(orderNumberField))
                 {
                     String query = "select Orders.OrderID, Orders.OrderDate, Orders.Freight, "
-                            + "[Order Details].ProductID, [Order Details].Quantity, [Order Details].UnitPrice, "
+                            + "Products.ProductName, [Order Details].Quantity, [Order Details].UnitPrice, "
                             + "[Order Details].Discount "
                             + "from [Order Details] inner join Orders "
-                            + "on Orders.OrderID=[Order Details].OrderID" + " where OrderID =" + orderNumberField.getText(); 
+                            + "on Orders.OrderID=[Order Details].OrderID inner join Products on Products.ProductID=[Order Details].ProductID" 
+                            + " where OrderID =" + orderNumberField.getText(); 
                        
 
                     getResults(query);
@@ -190,8 +191,9 @@ public class MidTermProject extends Application {
             {
                 if(validateOrderNumber(orderNumberField))
                 {
-                    String query = "select OrderID, UnitPrice, Quantity, Discount, (UnitPrice*Quantity)-(UnitPrice*Quantity*Discount) as Total "
-                            + "from [Order Details]"
+                    String query = "select [Order Details].OrderID, Products.ProductName, [Order Details].UnitPrice, [Order Details].Quantity,"
+                            + " [Order Details].Discount, (UnitPrice*Quantity)-(UnitPrice*Quantity*Discount) as Total "
+                            + "from [Order Details] inner join Products on Products.ProductID=[Order Details].ProductID "
                             + "where OrderID =" + orderNumberField.getText();
 
                     getResults(query);
@@ -211,6 +213,7 @@ public class MidTermProject extends Application {
         return orderTotalBox;
     }
     
+    //Make sure the user entered a valid order number
     private boolean validateOrderNumber(TextField order)
     {
         boolean validates = true;
@@ -231,6 +234,7 @@ public class MidTermProject extends Application {
         return validates;
     }
     
+    //Gets cointrols and design for the customer search
     private HBox getCustomerDetailBox()
     {
         HBox customerDetailBox = new HBox();
@@ -373,8 +377,7 @@ public class MidTermProject extends Application {
             //Dynamically add table columns
             for (int i = 0; i < rs.getMetaData().getColumnCount(); i++)
             {
-                final int j = i;
-                System.out.println(rs.getMetaData().getColumnName(i + 1));
+                final int j = i;    
                 TableColumn col = new TableColumn(rs.getMetaData().getColumnName(i + 1));
                 col.setCellValueFactory(
                     new Callback<CellDataFeatures<ObservableList, String>, ObservableValue<String>>() 

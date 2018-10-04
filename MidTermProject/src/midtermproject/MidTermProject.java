@@ -158,7 +158,6 @@ public class MidTermProject extends Application {
                             + "from [Order Details] inner join Orders "
                             + "on Orders.OrderID=[Order Details].OrderID inner join Products on Products.ProductID=[Order Details].ProductID" 
                             + " where OrderID =" + orderNumberField.getText(); 
-                       
 
                     getResults(query);
                 }
